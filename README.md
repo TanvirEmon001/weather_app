@@ -33,7 +33,7 @@ A feature-rich Flutter application that provides real-time weather data and a se
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/weather_app.git](https://github.com/your-username/weather_app.git)
+    git clone [https://github.com/tanviremon001/weather_app.git](https://github.com/tanviremon001/weather_app.git)
     ```
 2.  **Navigate to the project directory:**
     ```bash
