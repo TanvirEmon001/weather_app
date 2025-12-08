@@ -25,7 +25,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  final UserRegistrationProvider _provider = UserRegistrationProvider();
+
 
 
   @override
@@ -179,7 +179,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: Consumer<UserRegistrationProvider>(
                       builder: (context, core, _){
                         return ElevatedButton(
-                          onPressed: core.registrationInProgress ? null : _handleRegistration,
+                          onPressed: core.registrationInProgress
+                              ? null  // Disables button and prevents rebuild issues
+                              : _handleRegistration,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,
@@ -206,9 +208,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                         );
                       },
-
                     ),
                   ),
+
 
                   const SizedBox(height: 15),
 
@@ -372,9 +374,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void _handleRegistration() async {
+    FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
-
-      final bool isSuccess = await _provider.registration(
+      final provider = Provider.of<UserRegistrationProvider>(context, listen: false);
+      final bool isSuccess = await provider.registration(
         _nameController.text.trim(),
         _emailController.text.trim(),
         _locationController.text.trim(),
@@ -383,14 +386,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
       if (isSuccess) {
         _clearFormFields();
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
         // Navigate to login screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       } else {
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
       }
 
 

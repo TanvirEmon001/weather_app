@@ -17,7 +17,7 @@ class OtpVerificationScreen extends StatefulWidget {
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _otpFocusNodes = List.generate(6, (index) => FocusNode());
-  final VerifyOtpProvider _provider = VerifyOtpProvider();
+
 
   @override
   void initState() {
@@ -336,14 +336,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
 
     if (otp.length == 6) {
-      final bool isSuccess = await _provider.verifyOtp(otp, widget.email!);
+      final provider = Provider.of<VerifyOtpProvider>(context, listen: false);
+      final bool isSuccess = await provider.verifyOtp(otp, widget.email!);
       if(isSuccess){
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen(email: widget.email,otpToken: _provider.otpToken,)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen(email: widget.email,otpToken: provider.otpToken,)));
 
       } else {
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

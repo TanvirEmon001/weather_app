@@ -1,11 +1,13 @@
-// lib/view/screens/weather_screen.dart
+// lib/view/screens/weather_screen.dart (updated)
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_app/data/controllers/auth_controller.dart';
 import 'package:weather_app/viewmodel/weather_viewmodel.dart';
 import 'package:weather_app/view/widgets/weather_card.dart';
 import 'package:weather_app/view/widgets/air_quality_card.dart';
 import 'package:weather_app/view/widgets/weather_details_grid.dart';
 import 'package:weather_app/view/widgets/astro_card.dart';
+import 'profile_screen.dart';
 
 class WeatherScreen extends StatefulWidget {
   static const String route = "/weather";
@@ -19,13 +21,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   bool _showSearch = false;
+  int _currentIndex = 0; // For bottom navigation
+  final List<Widget> _screens = []; // Will hold our screens
 
   @override
   void initState() {
     super.initState();
+    // Initialize screens
+    _screens.add(_buildWeatherContent());
+    _screens.add(const ProfileScreen());
+
     // Load default city on start
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WeatherViewModel>().fetchWeather('Chittagong');
+      context.read<WeatherViewModel>().fetchWeather(AuthController.userModel?.location ?? "Dhaka");
     });
   }
 
@@ -38,17 +46,72 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WeatherViewModel>();
-
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E21),
       body: SafeArea(
         child: Column(
           children: [
-            // Header with search
-            _buildHeader(viewModel),
+            // Only show header on weather screen
+            if (_currentIndex == 0) _buildHeader(context),
 
-            // Main content
+            // Main content area
+            Expanded(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: _screens,
+              ),
+            ),
+          ],
+        ),
+      ),
+      // Bottom Navigation Bar
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A0E21),
+          border: Border(
+            top: BorderSide(
+              color: Colors.white.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: const Color(0xFF0A0E21),
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.white.withOpacity(0.6),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  // Build the weather content as a widget
+  Widget _buildWeatherContent() {
+    return Consumer<WeatherViewModel>(
+      builder: (context, viewModel, child) {
+        return Column(
+          children: [
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
@@ -56,12 +119,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
               ),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(WeatherViewModel viewModel) {
+  Widget _buildHeader(BuildContext context) {
+    final viewModel = Provider.of<WeatherViewModel>(context, listen: true);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(

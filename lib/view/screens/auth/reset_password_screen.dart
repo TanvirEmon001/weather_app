@@ -22,7 +22,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final ResetPasswordProvider _provider = ResetPasswordProvider();
+
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
@@ -150,6 +150,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     child: TextFormField(
                       controller: _newPasswordController,
                       obscureText: _obscureNewPassword,
+                      textInputAction: TextInputAction.next,
                       style: const TextStyle(color: Colors.white),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -367,7 +368,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   void _handleResetPassword() async {
     if (_formKey.currentState!.validate()) {
-      final bool isSuccess = await _provider.resetPassword(
+      final provider = Provider.of<ResetPasswordProvider>(context, listen: false);
+      final bool isSuccess = await provider.resetPassword(
         widget.email!,
         widget.otpToken!,
         _newPasswordController.text.trim(),
@@ -377,10 +379,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       if (isSuccess){
         _confirmPasswordController.clear();
         _newPasswordController.clear();
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
         Navigator.pushReplacementNamed(context, LoginScreen.route);
       } else {
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
       }
 
     }

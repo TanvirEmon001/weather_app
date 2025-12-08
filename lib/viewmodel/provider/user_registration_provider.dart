@@ -14,28 +14,36 @@ class UserRegistrationProvider extends ChangeNotifier {
     bool isSuccess = false;
 
     _registrationInProgress = true;
+    _errorMessage = null;
     notifyListeners();
 
-    Map<String,dynamic> requestBody = {
-      "name" : name,
-      "email" : email,
-      "location" : location,
-      "password" : password,
-    };
+    try{
+      Map<String,dynamic> requestBody = {
+        "name" : name,
+        "email" : email,
+        "location" : location,
+        "password" : password,
+      };
 
-    final ApiResponse response = await ApiService.postRequest(url: ApiEndpoints.authRegister, body: requestBody);
-    _registrationInProgress = false;
-    notifyListeners();
+      final ApiResponse response = await ApiService.postRequest(url: ApiEndpoints.authRegister, body: requestBody);
 
-    if (response.isSuccess){
-      _errorMessage = response.errorMessage.toString();
-      isSuccess = true;
-    } else {
-      _errorMessage = response.errorMessage.toString();
+
+      if (response.isSuccess){
+        isSuccess = true;
+          _errorMessage = "Registration successful";
+      } else {
+        isSuccess = false;
+        _errorMessage = response.errorMessage.toString();
+      }
+    } on Exception catch (e){
+      isSuccess = false;
+      _errorMessage = e.toString();
+    } finally {
+      _registrationInProgress = false;
+      notifyListeners();
     }
 
     return isSuccess;
-
   }
 
 

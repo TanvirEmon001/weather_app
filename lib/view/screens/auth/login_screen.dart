@@ -19,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final LoginProvider _provider = LoginProvider();
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
@@ -370,14 +369,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      final isSuccess = await _provider.login(_emailController.text.trim(), _passwordController.text.trim());
+      final provider = Provider.of<LoginProvider>(context,listen: false);
+
+      final isSuccess = await provider.login(_emailController.text.trim(), _passwordController.text.trim());
 
       if (isSuccess){
         _clearInput();
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WeatherScreen()));
       } else {
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
       }
     }
   }

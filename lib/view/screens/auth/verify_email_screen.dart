@@ -15,7 +15,7 @@ class VerifyEmailScreen extends StatefulWidget {
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final VerifyEmailProvider _provider = VerifyEmailProvider();
+
 
   @override
   void dispose() {
@@ -323,13 +323,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   void _handleVerifyEmail() async {
     if (_formKey.currentState!.validate()) {
-      final bool isSuccess = await _provider.verifyEmail(_emailController.text.trim());
+      final provider = Provider.of<VerifyEmailProvider>(context, listen: false);
+      final bool isSuccess = await provider.verifyEmail(_emailController.text.trim());
 
       if (isSuccess){
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OtpVerificationScreen(email: _emailController.text.trim())));
       } else {
-        showSnackBarMessage(context, _provider.errorMessage.toString());
+        showSnackBarMessage(context, provider.errorMessage.toString());
       }
 
     }
