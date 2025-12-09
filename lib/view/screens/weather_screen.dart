@@ -1,4 +1,3 @@
-// lib/view/screens/weather_screen.dart (updated)
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/data/controllers/auth_controller.dart';
@@ -7,6 +6,7 @@ import 'package:weather_app/view/widgets/weather_card.dart';
 import 'package:weather_app/view/widgets/air_quality_card.dart';
 import 'package:weather_app/view/widgets/weather_details_grid.dart';
 import 'package:weather_app/view/widgets/astro_card.dart';
+import '../../viewmodel/provider/edit_profile_provider.dart';
 import 'profile_screen.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -30,10 +30,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
     // Initialize screens
     _screens.add(_buildWeatherContent());
     _screens.add(const ProfileScreen());
-
     // Load default city on start
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WeatherViewModel>().fetchWeather(AuthController.userModel?.location ?? "Dhaka");
+      final editProvider = context.read<EditProfileProvider>();
+      final weatherViewModel = context.read<WeatherViewModel>();
+
+      final location = editProvider.user?.location ??
+          AuthController.userModel?.location;
+
+      weatherViewModel.fetchWeather(location!);
     });
   }
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:weather_app/data/controllers/auth_controller.dart';
 import 'package:weather_app/view/screens/auth/login_screen.dart';
+import 'package:weather_app/view/screens/edit_profile_screen.dart';
+import 'package:weather_app/viewmodel/provider/edit_profile_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String route = "/profile";
@@ -16,6 +19,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final String userLocation = "Chittagong, Bangladesh";
   final String userEmail = "johndoe@example.com";
   final String joinDate = "January 15, 2024";
+
+  @override
+  void initState(){
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,13 +76,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
 
               // User Name
-              Text(
-                AuthController.userModel?.name ?? userName,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              Consumer<EditProfileProvider>(
+                builder: (context, provider, _){
+                  return Text(
+                    provider.user?.name ?? AuthController.userModel!.name,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 8),
@@ -101,22 +113,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white.withOpacity(0.1),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    // Email Info
-                    _buildProfileItem(
-                      icon: Icons.email_outlined,
-                      title: 'Email Address',
-                      value: AuthController.userModel?.email ?? userEmail,
-                    ),
-                    const SizedBox(height: 20),
-                    // Location Info
-                    _buildProfileItem(
-                      icon: Icons.location_on_outlined,
-                      title: 'Location',
-                      value: AuthController.userModel?.location ?? userLocation,
-                    ),
-                  ],
+                child: Consumer<EditProfileProvider>(
+                  builder: (context, provider, _){
+                    return Column(
+                      children: [
+                        // Email Info
+                        _buildProfileItem(
+                          icon: Icons.email_outlined,
+                          title: 'Email Address',
+                          value: provider.user?.email ?? AuthController.userModel!.email,
+                        ),
+                        const SizedBox(height: 20),
+                        // Location Info
+                        _buildProfileItem(
+                          icon: Icons.location_on_outlined,
+                          title: 'Location',
+                          value: provider.user?.location ?? AuthController.userModel!.location,
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
 
@@ -155,10 +171,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'km/h',
                     ),
                     const SizedBox(height: 12),
-                    _buildPreferenceItem(
-                      'Default Location',
-                      AuthController.userModel?.location ?? userLocation,
-                    ),
+                    Consumer<EditProfileProvider>(
+                      builder: (context, provider, _){
+                        return _buildPreferenceItem(
+                          'Default Location',
+                           provider.user?.location ?? AuthController.userModel!.location,
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
@@ -174,7 +194,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, EditProfileScreen.route);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(

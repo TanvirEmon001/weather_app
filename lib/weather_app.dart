@@ -5,8 +5,11 @@ import 'package:weather_app/view/screens/auth/login_screen.dart';
 import 'package:weather_app/view/screens/auth/otp_verification_screen.dart';
 import 'package:weather_app/view/screens/auth/registration_screen.dart';
 import 'package:weather_app/view/screens/auth/reset_password_screen.dart';
+import 'package:weather_app/view/screens/auth/splash_screen.dart';
 import 'package:weather_app/view/screens/auth/verify_email_screen.dart';
+import 'package:weather_app/view/screens/edit_profile_screen.dart';
 import 'package:weather_app/view/screens/weather_screen.dart';
+import 'package:weather_app/viewmodel/provider/edit_profile_provider.dart';
 import 'package:weather_app/viewmodel/provider/login_provider.dart';
 import 'package:weather_app/viewmodel/provider/reset_password_provider.dart';
 import 'package:weather_app/viewmodel/provider/user_registration_provider.dart';
@@ -15,8 +18,7 @@ import 'package:weather_app/viewmodel/provider/verify_otp_provider.dart';
 import 'package:weather_app/viewmodel/weather_viewmodel.dart';
 
 class WeatherApp extends StatelessWidget {
-  final String? initialRoute;
-  const WeatherApp({super.key, required this.initialRoute});
+  const WeatherApp({super.key,});
 
   @override
   Widget build(BuildContext context){
@@ -28,16 +30,18 @@ class WeatherApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => VerifyEmailProvider()),
         ChangeNotifierProvider(create: (context) => VerifyOtpProvider()),
         ChangeNotifierProvider(create: (context) => ResetPasswordProvider()),
+        ChangeNotifierProvider(create: (context) => EditProfileProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: initialRoute,
+        initialRoute: SplashScreen.route,
         routes: {
           WeatherScreen.route : (context) => WeatherScreen(),
           LoginScreen.route : (context) => LoginScreen(),
           RegistrationScreen.route : (context) => RegistrationScreen(),
           VerifyEmailScreen.route : (context) => VerifyEmailScreen(),
-          //OtpVerificationScreen.route : (context) => OtpVerificationScreen()
+          EditProfileScreen.route : (context) => EditProfileScreen(),
+          SplashScreen.route : (context) => SplashScreen()
         },
       ),
     );

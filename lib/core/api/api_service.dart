@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
-
+import 'package:weather_app/data/controllers/auth_controller.dart';
 
 class ApiService {
   static final Logger _logger = Logger();
@@ -53,9 +53,11 @@ class ApiService {
       Uri uri = Uri.parse(url);
       _logRequest(url, body: body);
 
-      final Response response = await post(uri, headers: {
-        'Content-Type': 'application/json',
-      }, body: jsonEncode(body));
+      final Response response = await post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
       _logResponse(url, response);
 
       final int statusCode = response.statusCode;
@@ -66,7 +68,7 @@ class ApiService {
           isSuccess: true,
           responseCode: statusCode,
           responseData: decodedJson,
-          errorMessage: decodedJson["message"]
+          errorMessage: decodedJson["message"],
         );
       } else {
         // failed
@@ -75,7 +77,7 @@ class ApiService {
           isSuccess: false,
           responseCode: statusCode,
           responseData: decodedJson,
-          errorMessage: decodedJson['message']
+          errorMessage: decodedJson['message'],
         );
       }
     } on Exception catch (e) {
@@ -83,6 +85,55 @@ class ApiService {
       return ApiResponse(
         isSuccess: false,
         responseCode: -2,
+        responseData: null,
+        errorMessage: e.toString(),
+      );
+    }
+  }
+
+  static Future<ApiResponse> putRequest(
+    String url, {
+    required Map<String, String>? requestBody,
+  }) async {
+    try {
+      Uri uri = Uri.parse(url);
+      _logRequest(url, body: requestBody);
+
+      final Response response = await put(
+        uri,
+        headers: {
+          "Authorization": "Bearer ${AuthController.accessKey}",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(requestBody),
+      );
+      _logResponse(url, response);
+
+      final int statusCode = response.statusCode;
+      if (statusCode == 200) {
+        //SUCCESS
+        final decodedBody = jsonDecode(response.body);
+        return ApiResponse(
+          isSuccess: true,
+          responseCode: statusCode,
+          responseData: decodedBody,
+          errorMessage: decodedBody["message"]
+        );
+      } else {
+        // FAILED
+        final decodedBody = jsonDecode(response.body);
+        return ApiResponse(
+          isSuccess: false,
+          responseCode: statusCode,
+          responseData: decodedBody,
+          errorMessage: decodedBody["message"],
+        );
+      }
+    } on Exception catch (e) {
+      _logger.e("Get Exception: $e");
+      return ApiResponse(
+        isSuccess: false,
+        responseCode: -3,
         responseData: null,
         errorMessage: e.toString(),
       );

@@ -1,21 +1,23 @@
+import 'dart:ui';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:weather_app/data/controllers/auth_controller.dart';
-import 'package:weather_app/view/screens/auth/registration_screen.dart';
-import 'package:weather_app/view/screens/weather_screen.dart';
 import 'package:weather_app/weather_app.dart';
+import 'firebase_options.dart';
+
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  final String initialRoute;
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final bool isLoggedIn = await AuthController.isLoggedIn();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
-  if (isLoggedIn){
-    await AuthController.getUserData();
-    initialRoute = WeatherScreen.route;
-  } else {
-    initialRoute = RegistrationScreen.route;
-  }
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
-  runApp(WeatherApp(initialRoute: initialRoute));
+
+  runApp(WeatherApp());
 }

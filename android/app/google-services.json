@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "301834009254",
+    "project_id": "fir-assignment-45cb6",
+    "storage_bucket": "fir-assignment-45cb6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301834009254:android:a6058020bdbcee0cf19267",
+        "android_client_info": {
+          "package_name": "com.example.fire_base_assignment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Zjz993ySu9DRCCsd0SXn6ZBnbbF5TpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301834009254:android:a803e9bd2e8ad055f19267",
+        "android_client_info": {
+          "package_name": "com.example.weather_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Zjz993ySu9DRCCsd0SXn6ZBnbbF5TpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
